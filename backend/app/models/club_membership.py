@@ -12,9 +12,6 @@ if TYPE_CHECKING:
 class ClubMembership(Base):
     __tablename__ = "club_memberships"
 
-    id: Mapped[int] = mapped_column(
-        Integer, autoincrement=True, index=True
-    )
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"),primary_key=True)
     club_id: Mapped[int] = mapped_column(Integer, ForeignKey("clubs.id"), primary_key=True)
     is_leader:Mapped[bool] = mapped_column(default=False)
