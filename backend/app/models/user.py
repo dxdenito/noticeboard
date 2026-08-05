@@ -9,6 +9,8 @@ if TYPE_CHECKING:
     from app.models.role import Role
     from app.models.department import Department
     from app.models.club_membership import ClubMembership
+    from app.models.notice import Notice
+    from app.models.course_enrollment import CourseEnrollment
 
 
 class User(Base):
@@ -16,7 +18,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True, index=True
     )
-    email: Mapped[str] = mapped_column(String(255),unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     role_id: Mapped[int] = mapped_column(
@@ -36,4 +38,10 @@ class User(Base):
     department: Mapped["Department | None"] = relationship(
         "Department", back_populates="users"
     )
-    club_memberships: Mapped[list["ClubMembership"]] = relationship("ClubMembership", back_populates="user")
+    club_memberships: Mapped[list["ClubMembership"]] = relationship(
+        "ClubMembership", back_populates="user"
+    )
+    notices: Mapped[list["Notice"]] = relationship("Notice", back_populates="author")
+    course_enrollments: Mapped[list["CourseEnrollment"]] = relationship(
+        "CourseEnrollment", back_populates="user"
+    )

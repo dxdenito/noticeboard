@@ -1,29 +1,26 @@
 from datetime import datetime
+from app.core.database import Base
 from sqlalchemy import Integer, String, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.core.database import Base
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from app.models.user import User
     from app.models.notice import Notice
-    from app.models.course import Course
 
 
-class Department(Base):
-    __tablename__ = "departments"
+class Category(Base):
+    __tablename__ = "categories"
+
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True, index=True
     )
-    name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    code: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-
-    users: Mapped[list["User"]] = relationship(back_populates="department")
-    notices: Mapped[list["Notice"]] = relationship(back_populates="department")
-    courses: Mapped[list["Course"]] = relationship(back_populates="department")
+    # relationships
+    notices: Mapped[list["Notice"]] = relationship("Notice", back_populates="category")
