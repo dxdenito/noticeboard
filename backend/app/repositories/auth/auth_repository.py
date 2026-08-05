@@ -16,19 +16,19 @@ class AuthRepository:
         try:
             statement = select(User).where(User.id == id)
             result = await self.db.execute(statement)
-            return result.scalars.first()
+            return result.scalars().first()
         except SQLAlchemyError as e:
             await self.db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed. could not search by email"
+                detail=f"Failed. could not search by email: {str(e)}"
             )
 
     async def get_by_email(self, email:str):
         try:
             statement= select(User).where(User.email == email)
             result = await self.db.execute(statement)
-            return result.scalars.first()
+            return result.scalars().first()
         except SQLAlchemyError as e:
             await self.db.rollback()
             raise HTTPException(
@@ -36,4 +36,3 @@ class AuthRepository:
                 detail="Failed. Could not search by email "
             )
 
-    async def create_user(self, user:userCreate)
