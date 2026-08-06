@@ -1,7 +1,7 @@
 import hashlib
 from datetime import datetime, timedelta, timezone
 
-import bcrypt
+import bcrypt # type: ignore
 from jose import JWTError, jwt
 
 from app.core.config import settings
