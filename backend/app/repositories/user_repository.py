@@ -14,7 +14,7 @@ class UserRepository:
         return result.scalars().first()
 
     async def get_by_email(self, email: str) -> User | None:
-        statement = select(User).where(User.email == email)
+        statement = select(User).options(selectinload(User.role)).where(User.email == email)
         result = await self.db.execute(statement)
         return result.scalar_one_or_none()
 
@@ -25,7 +25,6 @@ class UserRepository:
         return user
 
     async def list_users(self, limit: int = 50, offset: int = 0) -> list[User]:
-        # create list_users_basic() without the loads, separate from a list_users_detailed()) when calls become to expensive
         statement = (
             select(User)
             .options(

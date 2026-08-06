@@ -53,6 +53,7 @@ class AuthService:
         try:
             return await self.user_repo.create_user(new_user)
         except IntegrityError:
+
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Error occurred while creating user",

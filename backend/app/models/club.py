@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.models.club_membership import ClubMembership
+    from app.models.notice import Notice
 
 
 class Club(Base):
@@ -26,3 +27,4 @@ class Club(Base):
     memberships: Mapped[list["ClubMembership"]] = relationship(
         "ClubMembership", back_populates="club", cascade="all, delete-orphan"
     )
+    notices: Mapped[list["Notice"]] = relationship(back_populates="club")
