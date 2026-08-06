@@ -22,3 +22,8 @@ class AttachmentRepository:
         statement = select(Attachment)
         result = await self.db.execute(statement)
         return list(result.scalars().all())
+
+    async def get_by_notice_id(self, notice_id: int) -> list[Attachment]:
+        statement = select(Attachment).where(Attachment.notice_id == notice_id)
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
