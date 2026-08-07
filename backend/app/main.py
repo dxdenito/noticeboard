@@ -6,6 +6,7 @@ from app.routes.users import router as users_router
 from app.routes.departments import router as departments_router
 from app.routes.clubs import router as clubs_router
 from app.routes.courses import router as courses_router
+from app.routes.notices import router as notices_router
 
 app = FastAPI(title="NoticeBoard")
 
@@ -15,6 +16,7 @@ app.include_router(users_router)
 app.include_router(departments_router)
 app.include_router(clubs_router)
 app.include_router(courses_router)
+app.include_router(notices_router)
 
 
 @app.get("/")

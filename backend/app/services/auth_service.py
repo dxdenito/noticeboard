@@ -77,3 +77,15 @@ class AuthService:
             )
         # 3. return the user
         return user
+
+    async def update_role(self, user_id: int, role_id: int) -> User:
+        user = await self.user_repo.get_by_id(user_id)
+        if not user:
+            raise HTTPException(404, "User not found")
+
+        role = await self.role_repo.get_by_id(role_id)
+        if not role:
+            raise HTTPException(400, "Invalid role_id")
+
+        user.role_id = role_id
+        return await self.user_repo.update(user)

@@ -25,3 +25,7 @@ class UserRead(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class UserRoleUpdate(BaseModel):
+    role_id: int
