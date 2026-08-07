@@ -18,6 +18,12 @@ class ClubRepository:
         result = await self.db.execute(statement)
         return result.scalar_one_or_none()
 
+    async def update(self, club: Club) -> Club:
+        await self.db.commit()
+        await self.db.refresh(club)
+        return club
+
+
     async def create(self, club: Club) -> Club:
         self.db.add(club)
         await self.db.commit()

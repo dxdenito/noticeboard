@@ -27,6 +27,7 @@ class ScopeLevel(enum.Enum):
     DEPARTMENT = "department"
     COURSE = "course"
     CAMPUS = "campus"
+    CLUB = "club"
 
 
 class Visibility(enum.Enum):
@@ -47,6 +48,9 @@ class Notice(Base):
     course_id: Mapped[int | None] = mapped_column(
         ForeignKey("courses.id"), nullable=True
     )
+    club_id: Mapped[int | None] = mapped_column(
+        ForeignKey("clubs.id"), nullable=True
+    )
 
     author_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("users.id"), nullable=False
@@ -63,9 +67,7 @@ class Notice(Base):
     department_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("departments.id"), nullable=True
     )
-    club_id: Mapped[int | None] = mapped_column(
-        Integer, ForeignKey("clubs.id"), nullable=True
-    )
+
     expiry_date: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
