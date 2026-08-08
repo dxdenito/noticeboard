@@ -4,8 +4,14 @@ from app.schemas.club_schema import (
     ClubRead,
     ClubUpdate,
 )
+from app.schemas.club_membership_schema import (
+    ClubMembershipCreate,
+    ClubMembershipRead,
+    ClubLeaderUpdate,
+)
 from app.core.deps import get_current_user, require_roles, get_db
 from app.services.club_service import ClubService
+from app.services.club_membership_service import ClubMembershipService
 from app.models.user import User
 
 router = APIRouter(prefix="/clubs", tags=["clubs"])
@@ -41,7 +47,32 @@ async def update_club(
     current_user: User = Depends(get_current_user),
     db=Depends(get_db),
 ):
-    
+
     club_service = ClubService(db)
     new_club = await club_service.update(id, data, current_user)
     return new_club
+
+
+@router.post("/{club_id}/members", response_model=ClubMembershipRead)
+async def add_club_member(
+    club_id: int,
+    data: ClubMembershipCreate,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db),
+):
+    membership_service = ClubMembershipService(db)
+    return await membership_service.add_member(club_id, data.user_id, current_user)
+
+
+@router.patch("/{club_id}/members/{user_id}/leader", response_model=ClubMembershipRead)
+async def set_club_leader(
+    club_id: int,
+    user_id: int,
+    data: ClubLeaderUpdate,
+    current_user: User = Depends(require_roles("admin")),
+    db=Depends(get_db),
+):
+    membership_service = ClubMembershipService(db)
+    return await membership_service.set_leader(
+        club_id, user_id, data.is_leader, current_user
+    )

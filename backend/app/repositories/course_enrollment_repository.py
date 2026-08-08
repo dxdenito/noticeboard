@@ -18,6 +18,11 @@ class CourseEnrollmentRepository:
         await self.db.refresh(course_enrollment)
         return course_enrollment
 
+    async def update(self, enrollment: CourseEnrollment) -> CourseEnrollment:
+        await self.db.commit()
+        await self.db.refresh(enrollment)
+        return enrollment
+
     async def list_all(self) -> list[CourseEnrollment]:
         statement = select(CourseEnrollment)
         result = await self.db.execute(statement)

@@ -7,6 +7,16 @@ from app.schemas.course_schema import (
 from app.core.deps import get_current_user, require_roles, get_db
 from app.services.course_service import CourseService
 from app.models.user import User
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.services.course_enrollment_service import CourseEnrollmentService
+
+
+from app.schemas.course_enrollment_schema import (
+    CourseEnrollmentCreate,
+    CourseEnrollmentRead,
+    CourseLeaderUpdate,
+)
+from app.services.course_enrollment_service import CourseEnrollmentService
 
 router = APIRouter(prefix="/courses", tags=["courses"])
 
@@ -41,7 +51,36 @@ async def update_course(
     current_user: User = Depends(get_current_user),
     db=Depends(get_db),
 ):
-    
+
     course_service = CourseService(db)
     new_course = await course_service.update(id, data, current_user)
     return new_course
+
+
+@router.post("/{course_id}/members", response_model=CourseEnrollmentRead)
+async def add_course_member(
+    course_id: int,
+    data: CourseEnrollmentCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    enrollment_service = CourseEnrollmentService(db)
+    return await enrollment_service.add_enrollment(
+        course_id, data.user_id, current_user
+    )
+
+
+@router.patch(
+    "/{course_id}/members/{user_id}/leader", response_model=CourseEnrollmentRead
+)
+async def set_course_leader(
+    course_id: int,
+    user_id: int,
+    data: CourseLeaderUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    enrollment_service = CourseEnrollmentService(db)
+    return await enrollment_service.set_leader(
+        course_id, user_id, data.is_leader, current_user
+    )

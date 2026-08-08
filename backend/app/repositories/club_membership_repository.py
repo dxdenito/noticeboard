@@ -18,6 +18,12 @@ class ClubMembershipRepository:
         await self.db.refresh(club_membership)
         return club_membership
 
+    
+    async def update(self, membership: ClubMembership) -> ClubMembership:
+        await self.db.commit()
+        await self.db.refresh(membership)
+        return membership
+
     async def list_all(self) -> list[ClubMembership]:
         statement = select(ClubMembership)
         result = await self.db.execute(statement)
