@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from app.models.notice import ScopeLevel, Priority, Visibility
+from app.schemas.department_schema import DepartmentRead
 
 
 class NoticeCreate(BaseModel):
@@ -25,7 +26,7 @@ class NoticeRead(BaseModel):
     scope_level: ScopeLevel
     priority: Priority
     visibility: Visibility
-    department_id: int | None
+    department: DepartmentRead | None
     club_id: int | None
     course_id: int | None
     expiry_date: datetime | None

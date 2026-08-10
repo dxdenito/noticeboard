@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     app_name: str = "Noticeboard"
     debug: bool = False
     model_config = {"env_file": ".env"}
+    UPLOAD_DIR: str = "uploads"
 
 
 settings = Settings()

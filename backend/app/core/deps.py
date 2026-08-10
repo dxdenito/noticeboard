@@ -1,25 +1,24 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status, Cookie
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.security import decode_access_token
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    access_token: str | None = Cookie(default=None),
     db: AsyncSession = Depends(get_db),
 ) -> User:
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
     )
 
-    payload = decode_access_token(token)
+    if access_token is None:
+        raise credentials_exception
+
+    payload = decode_access_token(access_token)
     if payload is None:
         raise credentials_exception
 
@@ -48,3 +47,22 @@ def require_roles(*allowed_roles: str):
         return current_user
 
     return role_checker
+
+
+async def get_optional_current_user(
+    access_token: str | None = Cookie(default=None),
+    db: AsyncSession = Depends(get_db),
+) -> User | None:
+    if access_token is None:
+        return None
+
+    payload = decode_access_token(access_token)
+    if payload is None:
+        return None
+
+    email: str | None = payload.get("sub")
+    if email is None:
+        return None
+
+    user_repo = UserRepository(db)
+    return await user_repo.get_by_email(email)

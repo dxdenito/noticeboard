@@ -21,5 +21,10 @@ class UserService:
         if not role:
             raise HTTPException(400, "Invalid role_id")
 
+        if role.role == "hod" and user.department_id is None:
+            raise HTTPException(
+                400, "Cannot assign the HOD role to a user with no department set"
+            )
+
         user.role_id = role_id
         return await self.user_repo.update(user)

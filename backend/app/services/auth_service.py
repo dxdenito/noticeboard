@@ -51,13 +51,19 @@ class AuthService:
             is_active=True,
         )
         try:
-            return await self.user_repo.create_user(new_user)
+            await self.user_repo.create_user(new_user)
         except IntegrityError:
 
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Error occurred while creating user",
             )
+
+        created_user = await self.user_repo.get_by_email(new_user.email)
+        if created_user is None:
+            raise HTTPException(status_code=500, detail="User creation failed unexpectedly")
+
+        return created_user
 
     async def authenticate(self, email: str, password: str) -> User:
         # 1. get user by email — if not found, raise HTTPException 401

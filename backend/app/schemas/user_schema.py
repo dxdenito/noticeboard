@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from app.schemas.role_schema import RoleRead
 
 
 class UserCreate(BaseModel):
@@ -12,14 +13,12 @@ class UserRead(BaseModel):
     id: int
     email: EmailStr
     full_name: str
-    role_id: int
+    role: RoleRead
     department_id: int | None
     is_active: bool
 
     class Config:
-        from_attributes = (
-            True  # lets this schema build directly from a SQLAlchemy User object
-        )
+        from_attributes = True
 
 
 class Token(BaseModel):
