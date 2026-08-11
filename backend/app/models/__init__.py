@@ -8,6 +8,7 @@ from app.models.course_enrollment import CourseEnrollment
 from app.models.category import Category
 from app.models.notice import Notice
 from app.models.attachment import Attachment
+from app.models.bookmark import Bookmark
 
 __all__ = [
     "Role",
@@ -20,4 +21,5 @@ __all__ = [
     "Category",
     "Notice",
     "Attachment",
+    "Bookmark"
 ]

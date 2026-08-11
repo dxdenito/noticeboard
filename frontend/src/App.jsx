@@ -5,10 +5,13 @@ import Feed from "./pages/Feed";
 import NoticeDetail from "./pages/NoticeDetail";
 import PostNotice from "./pages/PostNotice";
 import ProtectedRoute from "./components/ProtectedRoute"
+import Register from "./pages/Register";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
     <AuthProvider>
+      <Navbar />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Feed />} />
@@ -23,9 +26,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </AuthProvider>
-  );
+      );
 }
 
 export default App;

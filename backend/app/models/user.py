@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from app.models.club_membership import ClubMembership
     from app.models.notice import Notice
     from app.models.course_enrollment import CourseEnrollment
+    from app.models.bookmark import Bookmark
 
 
 class User(Base):
@@ -45,3 +46,4 @@ class User(Base):
     course_enrollments: Mapped[list["CourseEnrollment"]] = relationship(
         "CourseEnrollment", back_populates="user"
     )
+    bookmarks: Mapped[list["Bookmark"]] = relationship(back_populates="user")

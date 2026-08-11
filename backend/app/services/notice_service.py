@@ -56,7 +56,12 @@ class NoticeService:
             notice_data["department_id"] = current_user.department_id
 
         new_notice = Notice(**notice_data, author_id=current_user.id)
-        return await self.notice_repo.create(new_notice)
+        created = await self.notice_repo.create(new_notice)
+
+        reloaded = await self.notice_repo.get_by_id(created.id)
+        if reloaded is None:
+            raise HTTPException(500, "Notice creation failed unexpectedly")
+        return reloaded
 
     async def list_feed(self, current_user: User | None, limit: int = 50, offset: int = 0) -> list[Notice]:
         if current_user is not None and current_user.role.role == "admin":
@@ -117,3 +122,6 @@ class NoticeService:
             return membership is not None
 
         return False
+
+    async def list_my_notices(self, current_user: User, limit: int = 50, offset: int = 0) -> list[Notice]:
+        return await self.notice_repo.list_by_author(current_user.id, limit, offset)

@@ -28,3 +28,7 @@ class Token(BaseModel):
 
 class UserRoleUpdate(BaseModel):
     role_id: int
+
+
+class UserDepartmentUpdate(BaseModel):
+    department_id: int | None

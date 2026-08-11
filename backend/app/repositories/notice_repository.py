@@ -1,6 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.notice import Notice
+from app.schemas.notice_schema import NoticeCreate
+from app.models.user import User
 from sqlalchemy.orm import selectinload
 from sqlalchemy import or_, and_
 
@@ -109,6 +111,25 @@ class NoticeRepository:
                     Notice.expiry_date > datetime.now(timezone.utc),
                 ),
             )
+            .options(
+                selectinload(Notice.category),
+                selectinload(Notice.author),
+                selectinload(Notice.department),
+                selectinload(Notice.club),
+                selectinload(Notice.course),
+                selectinload(Notice.attachments),
+            )
+            .order_by(Notice.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
+
+    async def list_by_author(self, author_id: int, limit: int = 50, offset: int = 0) -> list[Notice]:
+        statement = (
+            select(Notice)
+            .where(Notice.author_id == author_id)
             .options(
                 selectinload(Notice.category),
                 selectinload(Notice.author),

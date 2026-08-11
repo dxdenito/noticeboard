@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from app.models.club import Club
     from app.models.course import Course
     from app.models.attachment import Attachment
+    from app.models.bookmark import Bookmark
 
 
 class Priority(enum.Enum):
@@ -48,9 +49,7 @@ class Notice(Base):
     course_id: Mapped[int | None] = mapped_column(
         ForeignKey("courses.id"), nullable=True
     )
-    club_id: Mapped[int | None] = mapped_column(
-        ForeignKey("clubs.id"), nullable=True
-    )
+    club_id: Mapped[int | None] = mapped_column(ForeignKey("clubs.id"), nullable=True)
 
     author_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("users.id"), nullable=False
@@ -90,3 +89,4 @@ class Notice(Base):
     attachments: Mapped[list["Attachment"]] = relationship(
         "Attachment", back_populates="notice"
     )
+    bookmarked_by: Mapped[list["Bookmark"]] = relationship(back_populates="notice")

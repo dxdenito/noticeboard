@@ -11,6 +11,7 @@ export default function PostNotice() {
   const [departments, setDepartments] = useState([]);
   const [clubs, setClubs] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [files, setFiles] = useState([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -74,7 +75,15 @@ export default function PostNotice() {
         course_id: form.course_id ? Number(form.course_id) : null,
         expiry_date: form.expiry_date ? new Date(form.expiry_date).toISOString() : null,
       };
+
       const notice = await api.post("/notices/", payload);
+
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        await api.post(`/notices/${notice.id}/attachments/`, formData);
+      }
+
       navigate(`/notices/${notice.id}`);
     } catch (err) {
       setError(err.message);
@@ -238,6 +247,12 @@ export default function PostNotice() {
           type="datetime-local"
           value={form.expiry_date}
           onChange={(e) => updateField("expiry_date", e.target.value)}
+          className="w-full border rounded px-3 py-2"
+        />
+        <input
+          type="file"
+          multiple
+          onChange={(e) => setFiles(Array.from(e.target.files))}
           className="w-full border rounded px-3 py-2"
         />
 

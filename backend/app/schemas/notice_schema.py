@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from datetime import datetime
 from app.models.notice import ScopeLevel, Priority, Visibility
 from app.schemas.department_schema import DepartmentRead
+from app.schemas.attachment_schema import AttachmentRead
+
 
 
 class NoticeCreate(BaseModel):
@@ -31,6 +33,11 @@ class NoticeRead(BaseModel):
     course_id: int | None
     expiry_date: datetime | None
     created_at: datetime
+    attachments: list[AttachmentRead] = []
 
     class Config:
         from_attributes = True
+
+
+
+    
