@@ -1,8 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.notice import Notice
-from app.schemas.notice_schema import NoticeCreate
-from app.models.user import User
 from sqlalchemy.orm import selectinload
 from sqlalchemy import or_, and_
 
@@ -55,6 +53,25 @@ class NoticeRepository:
         result = await self.db.execute(statement)
         return list(result.scalars().all())
 
+    async def list_by_author(self, author_id: int, limit: int = 50, offset: int = 0) -> list[Notice]:
+        statement = (
+            select(Notice)
+            .where(Notice.author_id == author_id)
+            .options(
+                selectinload(Notice.category),
+                selectinload(Notice.author),
+                selectinload(Notice.department),
+                selectinload(Notice.club),
+                selectinload(Notice.course),
+                selectinload(Notice.attachments),
+            )
+            .order_by(Notice.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
+
     async def list_for_viewer(
         self,
         department_id: int | None,
@@ -64,7 +81,6 @@ class NoticeRepository:
         limit: int = 50,
         offset: int = 0,
     ) -> list[Notice]:
-        # Anonymous visitors: only PUBLIC notices explicitly marked EXTERNAL.
         visibility_conditions = [
             and_(
                 Notice.visibility == Visibility.EXTERNAL,
@@ -73,10 +89,6 @@ class NoticeRepository:
         ]
 
         if is_authenticated:
-            # Any authenticated user sees ALL public-scope notices, regardless
-            # of visibility (INTERNAL "university-only" public notices included) —
-            # visibility only restricts what anonymous visitors can see, not
-            # logged-in users.
             visibility_conditions.append(Notice.scope_level == ScopeLevel.PUBLIC)
             visibility_conditions.append(Notice.scope_level == ScopeLevel.CAMPUS)
 
@@ -111,25 +123,6 @@ class NoticeRepository:
                     Notice.expiry_date > datetime.now(timezone.utc),
                 ),
             )
-            .options(
-                selectinload(Notice.category),
-                selectinload(Notice.author),
-                selectinload(Notice.department),
-                selectinload(Notice.club),
-                selectinload(Notice.course),
-                selectinload(Notice.attachments),
-            )
-            .order_by(Notice.created_at.desc())
-            .limit(limit)
-            .offset(offset)
-        )
-        result = await self.db.execute(statement)
-        return list(result.scalars().all())
-
-    async def list_by_author(self, author_id: int, limit: int = 50, offset: int = 0) -> list[Notice]:
-        statement = (
-            select(Notice)
-            .where(Notice.author_id == author_id)
             .options(
                 selectinload(Notice.category),
                 selectinload(Notice.author),

@@ -9,6 +9,7 @@ class BookmarkRead(BaseModel):
     notice_id: int
     created_at: datetime
     notice: NoticeRead
+    is_bookmarked: bool = False
 
     class Config:
         from_attributes = True

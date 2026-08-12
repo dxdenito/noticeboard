@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../api/client";
 import { QRCodeSVG } from 'qrcode.react';
+import { useAuth } from "../context/AuthContext";
 
 export default function NoticeDetail() {
   const { id } = useParams();
@@ -9,6 +10,26 @@ export default function NoticeDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const currentPostUrl = window.location.href;
+  const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
+  const { user } = useAuth();
+
+  async function toggleBookmark() {
+    setBookmarkLoading(true);
+    try {
+      if (bookmarked) {
+        await api.delete(`/notices/${id}/bookmark`);
+        setBookmarked(false);
+      } else {
+        await api.post(`/notices/${id}/bookmark`);
+        setBookmarked(true);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBookmarkLoading(false);
+    }
+  }
   
   useEffect(() => {
     async function loadNotice() {
@@ -33,6 +54,16 @@ export default function NoticeDetail() {
       <Link to="/" className="text-sm text-blue-600 mb-4 inline-block">
         &larr; Back to feed
       </Link>
+      <br />
+      {user && (
+        <button
+          onClick={toggleBookmark}
+          disabled={bookmarkLoading}
+          className="text-sm text-blue-600 mb-4"
+        >
+          {bookmarked ? "★ Bookmarked" : "☆ Bookmark this"}
+        </button>
+      )}
 
       <div className="bg-white p-6 rounded  ">
         <h1 className="text-2xl font-semibold mb-2">{notice.title}</h1>

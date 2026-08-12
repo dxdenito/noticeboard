@@ -7,7 +7,7 @@ export default function Navbar() {
   const { user, loading, logout } = useAuth();
 
   return (
-    <nav className="bg-white  px-4 py-3 flex justify-between items-center">
+    <nav className="bg-jkuat-green text-white  px-4 py-3 flex justify-between items-center">
       <Link to="/" className="font-semibold">Noticeboard</Link>
 
       <div className="flex items-center gap-4 text-sm">

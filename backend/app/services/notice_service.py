@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from app.repositories.notice_repository import NoticeRepository
 from app.repositories.club_membership_repository import ClubMembershipRepository
 from app.repositories.course_enrollment_repository import CourseEnrollmentRepository
+from app.repositories.bookmark_repository import BookmarkRepository
 from app.models.notice import Notice, ScopeLevel, Visibility
 from app.models.user import User
 from app.schemas.notice_schema import NoticeCreate
@@ -15,6 +16,20 @@ class NoticeService:
         self.notice_repo = NoticeRepository(db)
         self.club_membership_repo = ClubMembershipRepository(db)
         self.course_enrollment_repo = CourseEnrollmentRepository(db)
+        self.bookmark_repo = BookmarkRepository(db)
+
+    async def _attach_bookmark_status(self, notices: list[Notice], current_user: User | None) -> None:
+        """Stamps a runtime `is_bookmarked` attribute onto each notice, so
+        NoticeRead can serialize it. One query total, not one per notice."""
+        if current_user is None:
+            for notice in notices:
+                notice.is_bookmarked = False  # type: ignore[attr-defined]
+            return
+
+        bookmarks = await self.bookmark_repo.list_by_user_id(current_user.id)
+        bookmarked_ids = {b.notice_id for b in bookmarks}
+        for notice in notices:
+            notice.is_bookmarked = notice.id in bookmarked_ids  # type: ignore[attr-defined]
 
     async def _check_can_post(self, data: NoticeCreate, current_user: User) -> None:
         role = current_user.role.role
@@ -61,27 +76,40 @@ class NoticeService:
         reloaded = await self.notice_repo.get_by_id(created.id)
         if reloaded is None:
             raise HTTPException(500, "Notice creation failed unexpectedly")
+
+        await self._attach_bookmark_status([reloaded], current_user)
         return reloaded
 
     async def list_feed(self, current_user: User | None, limit: int = 50, offset: int = 0) -> list[Notice]:
         if current_user is not None and current_user.role.role == "admin":
-            return await self.notice_repo.list_all(limit, offset)
+            notices = await self.notice_repo.list_all(limit, offset)
+            await self._attach_bookmark_status(notices, current_user)
+            return notices
 
         if current_user is None:
-            return await self.notice_repo.list_for_viewer(
+            notices = await self.notice_repo.list_for_viewer(
                 department_id=None, club_ids=[], course_ids=[], is_authenticated=False,
                 limit=limit, offset=offset,
             )
+            await self._attach_bookmark_status(notices, current_user)
+            return notices
 
         club_memberships = await self.club_membership_repo.list_by_user_id(current_user.id)
         course_enrollments = await self.course_enrollment_repo.list_by_user_id(current_user.id)
         club_ids = [m.club_id for m in club_memberships]
         course_ids = [e.course_id for e in course_enrollments]
 
-        return await self.notice_repo.list_for_viewer(
+        notices = await self.notice_repo.list_for_viewer(
             department_id=current_user.department_id, club_ids=club_ids, course_ids=course_ids,
             is_authenticated=True, limit=limit, offset=offset,
         )
+        await self._attach_bookmark_status(notices, current_user)
+        return notices
+
+    async def list_my_notices(self, current_user: User, limit: int = 50, offset: int = 0) -> list[Notice]:
+        notices = await self.notice_repo.list_by_author(current_user.id, limit, offset)
+        await self._attach_bookmark_status(notices, current_user)
+        return notices
 
     async def get_by_id(self, id: int, current_user: User | None) -> Notice:
         notice = await self.notice_repo.get_by_id(id)
@@ -89,6 +117,8 @@ class NoticeService:
             raise HTTPException(404, "Notice not found")
         if not await self._can_view(notice, current_user):
             raise HTTPException(404, "Notice not found")
+
+        await self._attach_bookmark_status([notice], current_user)
         return notice
 
     async def _can_view(self, notice: Notice, current_user: User | None) -> bool:
@@ -122,6 +152,3 @@ class NoticeService:
             return membership is not None
 
         return False
-
-    async def list_my_notices(self, current_user: User, limit: int = 50, offset: int = 0) -> list[Notice]:
-        return await self.notice_repo.list_by_author(current_user.id, limit, offset)
