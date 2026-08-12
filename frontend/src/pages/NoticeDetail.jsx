@@ -30,12 +30,13 @@ export default function NoticeDetail() {
       setBookmarkLoading(false);
     }
   }
-  
+
   useEffect(() => {
     async function loadNotice() {
       try {
         const data = await api.get(`/notices/${id}`);
         setNotice(data);
+        setBookmarked(data.is_bookmarked);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -79,9 +80,9 @@ export default function NoticeDetail() {
         <ul className="space-y-1">
           {notice.attachments.map((att) => (
             <li key={att.id}>
-              <a
               
-                href={`${import.meta.env.VITE_API_URL}/attachments/${att.id}/download`}
+
+               <a href={`${import.meta.env.VITE_API_URL}/attachments/${att.id}/download`}
                 className="text-blue-600 text-sm underline"
               >
                 {att.file_name}
@@ -99,16 +100,16 @@ export default function NoticeDetail() {
             Share this article with friends or switch to your phone by scanning this code.
           </p>
         </div>
-        
-        
-        
+
+
+
         <div style={{ background: '#fff', padding: '10px', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-          <QRCodeSVG 
-            value={currentPostUrl} // Directly encodes the current browser tab URL
-            size={60}             // Image width/height in pixels
-            bgColor={"#ffffff"}    // Background color
-            fgColor={"#000000"}    // QR code block color
-            level={"M"}            // Error correction level (L, M, Q, H)
+          <QRCodeSVG
+            value={currentPostUrl}
+            size={60}
+            bgColor={"#ffffff"}
+            fgColor={"#000000"}
+            level={"M"}
           />
         </div>
       </div>

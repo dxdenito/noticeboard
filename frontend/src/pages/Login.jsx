@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import bgImage from "../images/jkuat.jpg"
 
 export default function Login() {
   const { login } = useAuth();
@@ -25,6 +26,10 @@ export default function Login() {
   }
 
   return (
+    <div className="grid grid-cols-1 md:grid-cols-2">
+      <div style={{ backgroundImage: `url(${bgImage})` }} className="hidden md:block w-full h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center">
+        
+      </div>
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form
         onSubmit={handleSubmit}
@@ -33,31 +38,37 @@ export default function Login() {
         <h1 className="text-xl font-semibold mb-4">Log in</h1>
 
         {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
+        <label className="font-bold mb-2" >Email</label>
 
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full border rounded px-3 py-2 mb-3"
+          className="w-full border border-gray-300 rounded px-3 py-2 mb-3"
           required
         />
+        <label className="font-bold mb-2 ">Password</label>
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded px-3 py-2 mb-4"
+          className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
           required
         />
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white rounded py-2 disabled:opacity-50"
+          className="w-full bg-jkuat-green text-white hover:bg-blue-800 cursor-pointer rounded py-2 disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Log in"}
         </button>
+        <p className="text-sm text-center mt-4">
+          Don't have an account? <Link to="/register" className="text-blue-600">Register</Link>
+        </p>
       </form>
+    </div>
     </div>
   );
 }

@@ -34,6 +34,7 @@ class NoticeRead(BaseModel):
     expiry_date: datetime | None
     created_at: datetime
     attachments: list[AttachmentRead] = []
+    is_bookmarked: bool = False   # ← add this line
 
     class Config:
         from_attributes = True

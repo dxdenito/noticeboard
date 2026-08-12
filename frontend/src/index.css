@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-jkuat-green: #006633;
-  --color-jkuat-gold: #ffc72c;
+    --color-jkuat-green: #95cb48;
+    --color-jkuat-gold: #ffc72c;
+    --color-jkuat-bg: #f4f7f5
+}
+
+body {
+  background-color: var(--color-jkuat-bg);
 }

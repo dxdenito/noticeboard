@@ -7,6 +7,8 @@ import PostNotice from "./pages/PostNotice";
 import ProtectedRoute from "./components/ProtectedRoute"
 import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
+import MyNotices from "./pages/MyNotices";
+import MyBookmarks from "./pages/MyBookmarks";
 
 function App() {
   return (
@@ -23,9 +25,12 @@ function App() {
             element={
               <ProtectedRoute>
                 <PostNotice />
+                
               </ProtectedRoute>
             }
           />
+          <Route path="/my-notices" element={<MyNotices/>} />
+          <Route path="/my-bookmarks" element={<MyBookmarks/>}/>
         <Route path="/register" element={<Register />} />
       </Routes>
     </AuthProvider>
