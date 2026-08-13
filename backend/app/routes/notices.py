@@ -44,6 +44,37 @@ async def get_my_notices(
     return await notice_service.list_my_notices(current_user, limit, offset)
 
 
+@router.get("/pending", response_model=list[NoticeRead])
+async def get_pending_notices(
+    limit: int = 50,
+    offset: int = 0,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    notice_service = NoticeService(db)
+    return await notice_service.list_pending(current_user, limit, offset)
+
+
+@router.patch("/{id}/approve", response_model=NoticeRead)
+async def approve_notice(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    notice_service = NoticeService(db)
+    return await notice_service.approve(id, current_user)
+
+
+@router.patch("/{id}/reject", response_model=NoticeRead)
+async def reject_notice(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    notice_service = NoticeService(db)
+    return await notice_service.reject(id, current_user)
+
+
 @router.get("/{id}", response_model=NoticeRead)
 async def get_notice(
     id: int,
@@ -52,7 +83,6 @@ async def get_notice(
 ):
     notice_service = NoticeService(db)
     return await notice_service.get_by_id(id, current_user)
-
 
 
 @router.post("/{id}/bookmark", response_model=BookmarkRead)

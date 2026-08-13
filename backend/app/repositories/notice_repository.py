@@ -6,7 +6,7 @@ from sqlalchemy import or_, and_
 
 
 from datetime import datetime, timezone
-from app.models.notice import ScopeLevel, Visibility
+from app.models.notice import ScopeLevel, Visibility, NoticeStatus
 
 
 class NoticeRepository:
@@ -34,10 +34,15 @@ class NoticeRepository:
         await self.db.commit()
         await self.db.refresh(notice)
         return notice
+    async def update(self, notice: Notice) -> Notice:
+        await self.db.commit()
+        await self.db.refresh(notice)
+        return notice
 
     async def list_all(self, limit: int, offset: int) -> list[Notice]:
         statement = (
             select(Notice)
+            .where(Notice.status == NoticeStatus.APPROVED)
             .options(
                 selectinload(Notice.department),
                 selectinload(Notice.club),
@@ -117,12 +122,12 @@ class NoticeRepository:
         statement = (
             select(Notice)
             .where(
-                or_(*visibility_conditions),
-                or_(
-                    Notice.expiry_date.is_(None),
-                    Notice.expiry_date > datetime.now(timezone.utc),
-                ),
-            )
+        Notice.status == NoticeStatus.APPROVED,
+        or_(*visibility_conditions),
+        or_(
+            Notice.expiry_date.is_(None),
+            Notice.expiry_date > datetime.now(timezone.utc),
+        ),)
             .options(
                 selectinload(Notice.category),
                 selectinload(Notice.author),
@@ -132,6 +137,24 @@ class NoticeRepository:
                 selectinload(Notice.attachments),
             )
             .order_by(Notice.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
+    async def list_pending(self, limit: int = 50, offset: int = 0) -> list[Notice]:
+        statement = (
+            select(Notice)
+            .where(Notice.status == NoticeStatus.PENDING)
+            .options(
+                selectinload(Notice.department),
+                selectinload(Notice.club),
+                selectinload(Notice.category),
+                selectinload(Notice.course),
+                selectinload(Notice.author),
+                selectinload(Notice.attachments),
+            )
+            .order_by(Notice.created_at.asc())  # oldest pending first — first in, first reviewed
             .limit(limit)
             .offset(offset)
         )

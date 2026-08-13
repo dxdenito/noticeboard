@@ -7,6 +7,21 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [pendingCount, setPendingCount] = useState(0);
+
+  async function loadPendingCount() {
+    if (user?.role.role !== "admin") {
+      setPendingCount(0);
+      return;
+    }
+    try {
+      const data = await api.get("/notices/pending");
+      setPendingCount(data.length);
+    } catch {
+      setPendingCount(0);
+    }
+  }
+
   async function loadCurrentUser() {
     try {
       const data = await api.get("/users/me");
@@ -21,6 +36,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     loadCurrentUser();
   }, []);
+
+  useEffect(() => {
+    loadPendingCount();
+  }, [user]);
 
   async function login(email, password) {
     const formBody = new URLSearchParams();
@@ -48,7 +67,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout , pendingCount, refreshPendingCount: loadPendingCount}}>
       {children}
     </AuthContext.Provider>
   );

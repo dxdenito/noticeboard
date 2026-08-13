@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from app.models.notice import ScopeLevel, Priority, Visibility
+from app.models.notice import ScopeLevel, Priority, NoticeStatus, Visibility
 from app.schemas.department_schema import DepartmentRead
 from app.schemas.attachment_schema import AttachmentRead
 
@@ -34,7 +34,8 @@ class NoticeRead(BaseModel):
     expiry_date: datetime | None
     created_at: datetime
     attachments: list[AttachmentRead] = []
-    is_bookmarked: bool = False   # ← add this line
+    is_bookmarked: bool = False  
+    status: NoticeStatus
 
     class Config:
         from_attributes = True

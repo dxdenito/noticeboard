@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
 import MyNotices from "./pages/MyNotices";
 import MyBookmarks from "./pages/MyBookmarks";
+import ReviewQueue from "./pages/ReviewQueue";
 
 function App() {
   return (
@@ -29,8 +30,9 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/my-notices" element={<MyNotices/>} />
-          <Route path="/my-bookmarks" element={<MyBookmarks/>}/>
+          <Route path="/my-notices" element={<ProtectedRoute><MyNotices/></ProtectedRoute>} />
+          <Route path="/my-bookmarks" element={<ProtectedRoute><MyBookmarks/></ProtectedRoute>}/>
+          <Route path="/review-queue" element={<ProtectedRoute><ReviewQueue/></ProtectedRoute>}/>  
         <Route path="/register" element={<Register />} />
       </Routes>
     </AuthProvider>

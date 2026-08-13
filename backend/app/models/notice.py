@@ -36,6 +36,12 @@ class Visibility(enum.Enum):
     EXTERNAL = "external"
 
 
+class NoticeStatus(enum.Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+
 class Notice(Base):
     __tablename__ = "notices"
     id: Mapped[int] = mapped_column(
@@ -62,6 +68,11 @@ class Notice(Base):
     )
     visibility: Mapped[Visibility] = mapped_column(
         Enum(Visibility, native_enum=False), nullable=False
+    )
+    status: Mapped[NoticeStatus] = mapped_column(
+        Enum(NoticeStatus, native_enum=False),
+        nullable=False,
+        default=NoticeStatus.PENDING,
     )
     department_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("departments.id"), nullable=True
