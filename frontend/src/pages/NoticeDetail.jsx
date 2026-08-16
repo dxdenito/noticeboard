@@ -3,6 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import { api } from "../api/client";
 import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from "../context/AuthContext";
+import { ArrowLeft, Star, Pin, PinOff } from "lucide-react";
+import { useToast } from "../context/ToastContext";
+
 
 export default function NoticeDetail() {
   const { id } = useParams();
@@ -13,6 +16,7 @@ export default function NoticeDetail() {
   const [bookmarked, setBookmarked] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const { user } = useAuth();
+  const { showError, showSuccess } = useToast();
 
   async function toggleBookmark() {
     setBookmarkLoading(true);
@@ -25,9 +29,24 @@ export default function NoticeDetail() {
         setBookmarked(true);
       }
     } catch (err) {
-      setError(err.message);
+      showError(err.message);
     } finally {
       setBookmarkLoading(false);
+    }
+  }
+  async function togglePin() {
+    try {
+      if (notice.is_pinned) {
+        const updated = await api.patch(`/notices/${id}/unpin`);
+        setNotice(updated);
+        showSuccess("Removed from public site");
+      } else {
+        const updated = await api.patch(`/notices/${id}/pin`);
+        setNotice(updated);
+        showSuccess("Pinned to public site");
+      }
+    } catch (err) {
+      showError(err.message);
     }
   }
 
@@ -38,7 +57,7 @@ export default function NoticeDetail() {
         setNotice(data);
         setBookmarked(data.is_bookmarked);
       } catch (err) {
-        setError(err.message);
+        showError(err.message);
       } finally {
         setLoading(false);
       }
@@ -47,24 +66,30 @@ export default function NoticeDetail() {
   }, [id]);
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
-  if (error) return <div className="p-8 text-red-600">{error}</div>;
+ 
 
   return (
     <>
     <div className="max-w-2xl mx-auto p-4">
-      <Link to="/" className="text-sm text-blue-600 mb-4 inline-block">
-        &larr; Back to feed
+      <Link to="/" className="text-sm text-blue-600 mb-4 inline-flex items-center gap-1">
+        <ArrowLeft size={14} /> Back to feed
       </Link>
       <br />
       {user && (
-        <button
-          onClick={toggleBookmark}
-          disabled={bookmarkLoading}
-          className="text-sm text-blue-600 mb-4"
-        >
-          {bookmarked ? "★ Bookmarked" : "☆ Bookmark this"}
+        <button onClick={toggleBookmark} disabled={bookmarkLoading} className="text-sm text-blue-600 mb-4 inline-flex items-center gap-1">
+          <Star size={14} fill={bookmarked ? "currentColor" : "none"} />
+          {bookmarked ? "Bookmarked" : "Bookmark this"}
         </button>
       )}
+      {user?.role.role === "admin" && (
+        <button onClick={togglePin} className="text-sm text-jkuat-green mb-4 ml-3 inline-flex items-center gap-1 transition-transform active:scale-90">
+          <span className="transition-transform duration-200">
+            {notice.is_pinned ? <PinOff size={14} /> : <Pin size={14} />}
+          </span>
+          {notice.is_pinned ? "Unpin" : "Pin to public site"}
+        </button>
+      )}
+      
 
       <div className="bg-white p-6 rounded  ">
         <h1 className="text-2xl font-semibold mb-2">{notice.title}</h1>

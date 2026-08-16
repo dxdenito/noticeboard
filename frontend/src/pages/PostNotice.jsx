@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
+import { useToast } from "../context/ToastContext";
 
 export default function PostNotice() {
   const { user, loading: authLoading } = useAuth();
@@ -12,6 +13,7 @@ export default function PostNotice() {
   const [clubs, setClubs] = useState([]);
   const [courses, setCourses] = useState([]);
   const [files, setFiles] = useState([]);
+  const { showError } = useToast();
 
   const [form, setForm] = useState({
     title: "",
@@ -39,7 +41,7 @@ export default function PostNotice() {
       setDepartments(deptList);
       setClubs(clubList);
       setCourses(courseList);
-    }).catch((err) => setError(err.message));
+    }).catch((err) => showError(err.message));
   }, []);
 
   if (authLoading) return <div className="p-8 text-center">Loading...</div>;
@@ -86,7 +88,7 @@ export default function PostNotice() {
 
       navigate(`/notices/${notice.id}`);
     } catch (err) {
-      setError(err.message);
+      showError(err.message);
     } finally {
       setSubmitting(false);
     }

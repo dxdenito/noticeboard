@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import NoticeCard from "../components/NoticeCard";
+import { useToast } from "../context/ToastContext";
 
 const PAGE_SIZE = 10;
 
@@ -12,6 +13,7 @@ export default function Feed() {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { showError } = useToast();
 
   useEffect(() => {
     async function loadNotices() {
@@ -23,7 +25,7 @@ export default function Feed() {
         setHasNextPage(data.length > PAGE_SIZE);
         setNotices(data.slice(0, PAGE_SIZE));
       } catch (err) {
-        setError(err.message);
+        showError(err.message);
       } finally {
         setLoading(false);
       }
@@ -32,7 +34,7 @@ export default function Feed() {
   }, [page, authLoading]);
 
   if (loading) return <div className="p-8 text-center">Loading notices...</div>;
-  if (error) return <div className="p-8 text-red-600">{error}</div>;
+
 
   return (
     <div className="max-w-2xl mx-auto p-4">

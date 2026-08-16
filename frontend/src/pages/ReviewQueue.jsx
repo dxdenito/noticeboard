@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 
 export default function ReviewQueue() {
   const [notices, setNotices] = useState([]);
@@ -9,13 +10,14 @@ export default function ReviewQueue() {
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
   const { refreshPendingCount } = useAuth();
+  const { showError } = useToast();
 
   async function loadPending() {
     try {
       const data = await api.get("/notices/pending");
       setNotices(data);
     } catch (err) {
-      setError(err.message);
+      showError(err.message);
     } finally {
       setLoading(false);
     }
@@ -32,14 +34,14 @@ export default function ReviewQueue() {
       setNotices((prev) => prev.filter((n) => n.id !== id));
       refreshPendingCount();
     } catch (err) {
-      setError(err.message);
+      showError(err.message);
     } finally {
       setActionLoading(null);
     }
   }
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
-  if (error) return <div className="p-8 text-red-600">{error}</div>;
+
 
   return (
     <div className="max-w-2xl mx-auto p-4">

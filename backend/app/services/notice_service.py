@@ -247,3 +247,46 @@ class NoticeService:
             raise HTTPException(500, "Notice update failed unexpectedly")
         await self._attach_bookmark_status([reloaded], current_user)
         return reloaded
+
+    async def pin(self, notice_id: int, current_user: User) -> Notice:
+        if current_user.role.role != "admin":
+            raise HTTPException(403, "Only an admin can pin notices")
+
+        notice = await self.notice_repo.get_by_id(notice_id)
+        if not notice:
+            raise HTTPException(404, "Notice not found")
+
+        if (
+            notice.scope_level != ScopeLevel.PUBLIC
+            or notice.visibility != Visibility.EXTERNAL
+        ):
+            raise HTTPException(400, "Only public, external notices can be pinned")
+
+        notice.is_pinned = True
+        await self.notice_repo.update(notice)
+
+        reloaded = await self.notice_repo.get_by_id(notice_id)
+        if reloaded is None:
+            raise HTTPException(500, "Notice update failed unexpectedly")
+        await self._attach_bookmark_status([reloaded], current_user)
+        return reloaded
+
+    async def unpin(self, notice_id: int, current_user: User) -> Notice:
+        if current_user.role.role != "admin":
+            raise HTTPException(403, "Only an admin can unpin notices")
+
+        notice = await self.notice_repo.get_by_id(notice_id)
+        if not notice:
+            raise HTTPException(404, "Notice not found")
+
+        notice.is_pinned = False
+        await self.notice_repo.update(notice)
+
+        reloaded = await self.notice_repo.get_by_id(notice_id)
+        if reloaded is None:
+            raise HTTPException(500, "Notice update failed unexpectedly")
+        await self._attach_bookmark_status([reloaded], current_user)
+        return reloaded
+
+    async def list_pinned(self, limit: int = 10) -> list[Notice]:
+        return await self.notice_repo.list_pinned(limit)

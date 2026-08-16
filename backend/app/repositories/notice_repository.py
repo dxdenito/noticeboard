@@ -160,3 +160,23 @@ class NoticeRepository:
         )
         result = await self.db.execute(statement)
         return list(result.scalars().all())
+
+    async def list_pinned(self, limit: int = 10) -> list[Notice]:
+        statement = (
+            select(Notice)
+            .where(
+                Notice.is_pinned == True,
+                Notice.status == NoticeStatus.APPROVED,
+                Notice.scope_level == ScopeLevel.PUBLIC,
+                Notice.visibility == Visibility.EXTERNAL,
+            )
+            .options(
+                selectinload(Notice.category),
+                selectinload(Notice.author),
+                selectinload(Notice.attachments),
+            )
+            .order_by(Notice.created_at.desc())
+            .limit(limit)
+        )
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())

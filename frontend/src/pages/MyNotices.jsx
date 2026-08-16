@@ -1,21 +1,24 @@
 import { useState, useEffect } from "react";
 import { api } from "../api/client";
 import NoticeCard from "../components/NoticeCard";
+import { useToast } from "../context/ToastContext";
 
 export default function MyNotices() {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { showError } = useToast();
+  
 
   useEffect(() => {
     api.get("/notices/mine")
       .then(setNotices)
-      .catch((err) => setError(err.message))
+      .catch((err) => showError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
-  if (error) return <div className="p-8 text-red-600">{error}</div>;
+
 
   return (
     <div className="max-w-2xl mx-auto p-4">

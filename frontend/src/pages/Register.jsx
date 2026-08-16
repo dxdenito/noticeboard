@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api/client";
 import bgImage from "../images/jkuat.jpg"
+import { useToast } from "../context/ToastContext";
 
 export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "", full_name: "" });
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const { showError } = useToast();
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -21,7 +23,7 @@ export default function Register() {
       await api.post("/auth/register", form);
       navigate("/login");
     } catch (err) {
-      setError(err.message);
+      showError(err.message);
     } finally {
       setSubmitting(false);
     }

@@ -17,7 +17,7 @@ app = FastAPI(title="NoticeBoard")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173","http://127.0.0.1:5173","http://10.2.14.26:5173","http://192.168.137.1:5173"],  # your Vite dev server
+    allow_origins=["http://localhost:5173","http://127.0.0.1:5173","http://10.2.14.26:5173","http://192.168.137.1:5173","http://192.168.0.104:5173"],  # your Vite dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

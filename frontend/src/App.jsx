@@ -10,32 +10,35 @@ import Navbar from "./components/Navbar";
 import MyNotices from "./pages/MyNotices";
 import MyBookmarks from "./pages/MyBookmarks";
 import ReviewQueue from "./pages/ReviewQueue";
+import { ToastProvider } from "./context/ToastContext";
 
 function App() {
   return (
-    <AuthProvider>
-      <Navbar />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Feed />} />
-       
-        <Route path="/notices/:id" element={<NoticeDetail />} />
+    <ToastProvider>
+      <AuthProvider>
+        <Navbar />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Feed />} />
         
-        <Route
-            path="/post-notice"
-            element={
-              <ProtectedRoute>
-                <PostNotice />
-                
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/my-notices" element={<ProtectedRoute><MyNotices/></ProtectedRoute>} />
-          <Route path="/my-bookmarks" element={<ProtectedRoute><MyBookmarks/></ProtectedRoute>}/>
-          <Route path="/review-queue" element={<ProtectedRoute><ReviewQueue/></ProtectedRoute>}/>  
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </AuthProvider>
+          <Route path="/notices/:id" element={<NoticeDetail />} />
+          
+          <Route
+              path="/post-notice"
+              element={
+                <ProtectedRoute>
+                  <PostNotice />
+                  
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/my-notices" element={<ProtectedRoute><MyNotices/></ProtectedRoute>} />
+            <Route path="/my-bookmarks" element={<ProtectedRoute><MyBookmarks/></ProtectedRoute>}/>
+            <Route path="/review-queue" element={<ProtectedRoute><ReviewQueue/></ProtectedRoute>}/>  
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </AuthProvider>
+    </ToastProvider>
       );
 }
 

@@ -69,6 +69,7 @@ class Notice(Base):
     visibility: Mapped[Visibility] = mapped_column(
         Enum(Visibility, native_enum=False), nullable=False
     )
+    is_pinned: Mapped[bool] = mapped_column(default=False, nullable=False)
     status: Mapped[NoticeStatus] = mapped_column(
         Enum(NoticeStatus, native_enum=False),
         nullable=False,

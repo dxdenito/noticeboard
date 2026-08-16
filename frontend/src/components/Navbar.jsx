@@ -15,10 +15,10 @@ export default function Navbar() {
     </div>
     <nav className="bg-jkuat-green text-white  px-4 py-3 flex justify-between items-center">
       <div>
-          <img src={logo} alt="jkuat logo" />
-      </div>
-      <Link to="/" className="font-semibold">Noticeboard</Link>
-
+          
+      
+         <Link to="/" className="flex items-center gap-2 font-semibold"><img src={logo} className="w-8 h-8" alt="jkuat logo" />Noticeboard</Link>
+    </div>
       <div className="flex items-center gap-4 text-sm">
         {!loading && user && POSTING_ROLES.includes(user.role.role) && (
           <Link to="/post-notice" className="text-white-600">Post Notice</Link>

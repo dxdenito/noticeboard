@@ -103,3 +103,31 @@ async def unbookmark_notice(
 ):
     bookmark_service = BookmarkService(db)
     await bookmark_service.unbookmark(id, current_user)
+
+@router.get("/pinned", response_model=list[NoticeRead])
+async def get_pinned_notices(
+    limit: int = 10,
+    db: AsyncSession = Depends(get_db),
+):
+    notice_service = NoticeService(db)
+    return await notice_service.list_pinned(limit)
+
+
+@router.patch("/{id}/pin", response_model=NoticeRead)
+async def pin_notice(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    notice_service = NoticeService(db)
+    return await notice_service.pin(id, current_user)
+
+
+@router.patch("/{id}/unpin", response_model=NoticeRead)
+async def unpin_notice(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    notice_service = NoticeService(db)
+    return await notice_service.unpin(id, current_user)
