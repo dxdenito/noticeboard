@@ -14,6 +14,7 @@ import { ToastProvider } from "./context/ToastContext";
 import ManageUsers from "./pages/admin/ManageUsers";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRoute from "./components/AdminRoutes";
+import ManageDepartments from "./pages/admin/ManageDepartments";
 
 function App() {
   return (
@@ -40,7 +41,7 @@ function App() {
             <Route path="/review-queue" element={<ProtectedRoute><ReviewQueue/></ProtectedRoute>}/>  
             <Route path="/admin/manage-users" element={<AdminRoute><ManageUsers/></AdminRoute>}/>
             <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard/></AdminRoute>}/>
-
+            <Route path="/admin/manage-departments" element={<AdminRoute><ManageDepartments/></AdminRoute>}/>
 
           <Route path="/register" element={<Register />} />
         </Routes>
