@@ -10,6 +10,9 @@ from app.routes.notices import router as notices_router
 from app.routes.attachments import router as attachment_router
 from app.routes.category import router as category_router
 from fastapi.middleware.cors import CORSMiddleware
+from app.routes.admin.users import router as admin_users_router
+from app.routes.roles import router as roles_router
+
 
 app = FastAPI(title="NoticeBoard")
 
@@ -32,6 +35,8 @@ app.include_router(clubs_router)
 app.include_router(courses_router)
 app.include_router(notices_router)
 app.include_router(attachment_router)
+app.include_router(admin_users_router)
+app.include_router(roles_router)
 
 
 @app.get("/")

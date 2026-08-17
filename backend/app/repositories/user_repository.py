@@ -9,12 +9,14 @@ class UserRepository:
         self.db = db
 
     async def get_by_id(self, id: int) -> User | None:
-        statement = select(User).where(User.id == id)
+        statement = select(User).options(selectinload(User.role)).where(User.id == id)
         result = await self.db.execute(statement)
         return result.scalars().first()
 
     async def get_by_email(self, email: str) -> User | None:
-        statement = select(User).options(selectinload(User.role)).where(User.email == email)
+        statement = (
+            select(User).options(selectinload(User.role)).where(User.email == email)
+        )
         result = await self.db.execute(statement)
         return result.scalar_one_or_none()
 

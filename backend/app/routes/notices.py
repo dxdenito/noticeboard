@@ -5,9 +5,8 @@ from app.core.deps import get_current_user, get_db, get_optional_current_user
 from app.services.notice_service import NoticeService
 from app.schemas.notice_schema import NoticeCreate, NoticeRead
 from app.models.user import User
-from app.core.deps import get_optional_current_user
 from app.services.bookmark_service import BookmarkService
-from app.schemas.bookmark_schema import BookmarkRead  # you'll need to write this
+from app.schemas.bookmark_schema import BookmarkRead
 
 router = APIRouter(prefix="/notices", tags=["notices"])
 
@@ -42,6 +41,15 @@ async def get_my_notices(
 ):
     notice_service = NoticeService(db)
     return await notice_service.list_my_notices(current_user, limit, offset)
+
+
+@router.get("/pinned", response_model=list[NoticeRead])
+async def get_pinned_notices(
+    limit: int = 10,
+    db: AsyncSession = Depends(get_db),
+):
+    notice_service = NoticeService(db)
+    return await notice_service.list_pinned(limit)
 
 
 @router.get("/pending", response_model=list[NoticeRead])
@@ -103,14 +111,6 @@ async def unbookmark_notice(
 ):
     bookmark_service = BookmarkService(db)
     await bookmark_service.unbookmark(id, current_user)
-
-@router.get("/pinned", response_model=list[NoticeRead])
-async def get_pinned_notices(
-    limit: int = 10,
-    db: AsyncSession = Depends(get_db),
-):
-    notice_service = NoticeService(db)
-    return await notice_service.list_pinned(limit)
 
 
 @router.patch("/{id}/pin", response_model=NoticeRead)

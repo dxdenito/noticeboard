@@ -32,6 +32,7 @@ export default function Navbar() {
           </>
         )}
         {!loading && user?.role.role === "admin" && (
+          <>
           <Link to="/review-queue" className="text-gray-600 relative">
             Review Queue
             {pendingCount > 0 && (
@@ -40,6 +41,9 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+          <Link to="/admin/dashboard">Admin Dashboard</Link>
+
+          </>
         )}
 
         {!loading && user && (

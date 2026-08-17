@@ -66,7 +66,6 @@ class AuthService:
         return created_user
 
     async def authenticate(self, email: str, password: str) -> User:
-        # 1. get user by email — if not found, raise HTTPException 401
         user = await self.user_repo.get_by_email(email)
         if not user:
             raise HTTPException(
@@ -74,14 +73,20 @@ class AuthService:
                 detail="Invalid email or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        # 2. verify_password — if wrong, raise HTTPException 401 (same message as "not found" — don't reveal which one failed, that leaks which emails are registered)
+
         if not verify_password(password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        # 3. return the user
+
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Your account has been deactivated. Contact an administrator.",
+            )
+
         return user
 
     async def update_role(self, user_id: int, role_id: int) -> User:

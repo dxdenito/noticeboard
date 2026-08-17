@@ -11,6 +11,9 @@ import MyNotices from "./pages/MyNotices";
 import MyBookmarks from "./pages/MyBookmarks";
 import ReviewQueue from "./pages/ReviewQueue";
 import { ToastProvider } from "./context/ToastContext";
+import ManageUsers from "./pages/admin/ManageUsers";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminRoute from "./components/AdminRoutes";
 
 function App() {
   return (
@@ -35,6 +38,10 @@ function App() {
             <Route path="/my-notices" element={<ProtectedRoute><MyNotices/></ProtectedRoute>} />
             <Route path="/my-bookmarks" element={<ProtectedRoute><MyBookmarks/></ProtectedRoute>}/>
             <Route path="/review-queue" element={<ProtectedRoute><ReviewQueue/></ProtectedRoute>}/>  
+            <Route path="/admin/manage-users" element={<AdminRoute><ManageUsers/></AdminRoute>}/>
+            <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard/></AdminRoute>}/>
+
+
           <Route path="/register" element={<Register />} />
         </Routes>
       </AuthProvider>

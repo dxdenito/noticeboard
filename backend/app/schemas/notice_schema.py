@@ -36,6 +36,7 @@ class NoticeRead(BaseModel):
     attachments: list[AttachmentRead] = []
     is_bookmarked: bool = False  
     status: NoticeStatus
+    is_pinned: bool = False
 
     class Config:
         from_attributes = True

@@ -173,6 +173,9 @@ class NoticeRepository:
             .options(
                 selectinload(Notice.category),
                 selectinload(Notice.author),
+                selectinload(Notice.department),
+                selectinload(Notice.club),
+                selectinload(Notice.course),
                 selectinload(Notice.attachments),
             )
             .order_by(Notice.created_at.desc())
