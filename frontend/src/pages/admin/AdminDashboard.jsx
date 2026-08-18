@@ -7,7 +7,7 @@ export default function AdminDashboard() {
   const links = [
     { to: "/admin/manage-users", label: "Manage Users" },
     { to: "/admin/manage-departments", label: "Manage Departments" },
-    { to: "/admin/clubs", label: "Manage Clubs" },
+    { to: "/admin/manage-clubs", label: "Manage Clubs" },
     { to: "/admin/courses", label: "Manage Courses" },
     { to: "/admin/categories", label: "Manage Categories" },
     { to: "/review-queue", label: `Review Queue${pendingCount > 0 ? ` (${pendingCount})` : ""}` },

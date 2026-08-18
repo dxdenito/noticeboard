@@ -15,6 +15,7 @@ import ManageUsers from "./pages/admin/ManageUsers";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRoute from "./components/AdminRoutes";
 import ManageDepartments from "./pages/admin/ManageDepartments";
+import ManageClubs from "./pages/admin/ManageClubs";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="/admin/manage-users" element={<AdminRoute><ManageUsers/></AdminRoute>}/>
             <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard/></AdminRoute>}/>
             <Route path="/admin/manage-departments" element={<AdminRoute><ManageDepartments/></AdminRoute>}/>
+            <Route path="/admin/manage-clubs" element={<AdminRoute><ManageClubs/></AdminRoute> }/>
 
           <Route path="/register" element={<Register />} />
         </Routes>
