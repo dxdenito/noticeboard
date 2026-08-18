@@ -16,6 +16,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRoute from "./components/AdminRoutes";
 import ManageDepartments from "./pages/admin/ManageDepartments";
 import ManageClubs from "./pages/admin/ManageClubs";
+import ManageCourses from "./pages/admin/ManageCourses";
+import ManageCategories from "./pages/admin/ManageCategories";
 
 function App() {
   return (
@@ -44,6 +46,11 @@ function App() {
             <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard/></AdminRoute>}/>
             <Route path="/admin/manage-departments" element={<AdminRoute><ManageDepartments/></AdminRoute>}/>
             <Route path="/admin/manage-clubs" element={<AdminRoute><ManageClubs/></AdminRoute> }/>
+            <Route path="/admin/manage-courses" element={<AdminRoute><ManageCourses/></AdminRoute> }/>
+            <Route path="/admin/manage-categories" element={<AdminRoute><ManageCategories/></AdminRoute> }/>
+
+
+
 
           <Route path="/register" element={<Register />} />
         </Routes>

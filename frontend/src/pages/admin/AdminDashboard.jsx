@@ -8,8 +8,8 @@ export default function AdminDashboard() {
     { to: "/admin/manage-users", label: "Manage Users" },
     { to: "/admin/manage-departments", label: "Manage Departments" },
     { to: "/admin/manage-clubs", label: "Manage Clubs" },
-    { to: "/admin/courses", label: "Manage Courses" },
-    { to: "/admin/categories", label: "Manage Categories" },
+    { to: "/admin/manage-courses", label: "Manage Courses" },
+    { to: "/admin/manage-categories", label: "Manage Categories" },
     { to: "/review-queue", label: `Review Queue${pendingCount > 0 ? ` (${pendingCount})` : ""}` },
   ];
   
