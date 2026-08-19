@@ -32,3 +32,8 @@ class CourseRepository:
         statement = select(Course)
         result = await self.db.execute(statement)
         return list(result.scalars().all())
+
+    async def list_by_department_id(self, department_id: int) -> list[Course]:
+        statement = select(Course).where(Course.department_id == department_id)
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())

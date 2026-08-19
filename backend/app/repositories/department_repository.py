@@ -27,6 +27,9 @@ class DepartmentRepository:
         await self.db.commit()
         await self.db.refresh(department)
         return department
+    async def delete(self, department: Department) -> None:
+        await self.db.delete(department)
+        await self.db.commit()
 
     async def list_all(self) -> list[Department]:
         statement = select(Department)

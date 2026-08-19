@@ -89,3 +89,19 @@ class DepartmentService:
             await self.user_repo.update(user)
 
         return {"courses_moved": len(courses), "users_moved": len(users)}
+
+    async def delete(self, department_id: int) -> None:
+        department = await self.dept_repo.get_by_id(department_id)
+        if not department:
+            raise HTTPException(404, "Department not found")
+
+        courses = await self.course_repo.list_by_department_id(department_id)
+        users = await self.user_repo.list_by_department_id(department_id)
+
+        if courses or users:
+            raise HTTPException(
+                400,
+                f"Cannot delete: {len(courses)} course(s) and {len(users)} user(s) still assigned. Reassign them first.",
+            )
+
+        await self.dept_repo.delete(department)

@@ -46,3 +46,8 @@ class UserRepository:
         )
         result = await self.db.execute(statement)
         return list(result.scalars().all())
+    
+    async def list_by_department_id(self,department_id:int ) ->list[User]:
+        statement = (select (User).where(User.department_id == department_id))
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())

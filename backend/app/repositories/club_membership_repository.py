@@ -35,3 +35,5 @@ class ClubMembershipRepository:
         )
         result = await self.db.execute(statement)
         return result.scalars().first()
+
+    
