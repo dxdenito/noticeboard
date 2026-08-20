@@ -23,7 +23,6 @@ class ClubRepository:
         await self.db.refresh(club)
         return club
 
-
     async def create(self, club: Club) -> Club:
         self.db.add(club)
         await self.db.commit()
@@ -34,3 +33,7 @@ class ClubRepository:
         statement = select(Club)
         result = await self.db.execute(statement)
         return list(result.scalars().all())
+
+    async def delete(self, club: Club) -> None:
+        await self.db.delete(club)
+        await self.db.commit()

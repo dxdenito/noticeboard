@@ -183,3 +183,10 @@ class NoticeRepository:
         )
         result = await self.db.execute(statement)
         return list(result.scalars().all())
+
+    async def list_by_category_id(self,category_id: int)-> list[Notice]:
+        statement = (select(Notice).where(Notice.category_id == category_id))
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
+
+  

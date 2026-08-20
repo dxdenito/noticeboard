@@ -18,7 +18,6 @@ class ClubMembershipRepository:
         await self.db.refresh(club_membership)
         return club_membership
 
-    
     async def update(self, membership: ClubMembership) -> ClubMembership:
         await self.db.commit()
         await self.db.refresh(membership)
@@ -36,4 +35,11 @@ class ClubMembershipRepository:
         result = await self.db.execute(statement)
         return result.scalars().first()
 
-    
+    async def list_by_club_id(self, club_id: int) -> list[ClubMembership]:
+        statement = select(ClubMembership).where(ClubMembership.club_id == club_id)
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
+
+    async def delete(self, membership: ClubMembership) -> None:
+        await self.db.delete(membership)
+        await self.db.commit()

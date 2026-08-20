@@ -27,3 +27,7 @@ class CategoryRepository:
         statement = select(Category)
         result = await self.db.execute(statement)
         return list(result.scalars().all())
+
+    async def delete(self, category: Category) -> None:
+        await self.db.delete(category)
+        await self.db.commit()

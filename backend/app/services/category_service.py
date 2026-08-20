@@ -1,14 +1,57 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException, status
 from app.repositories.category_repository import CategoryRepository
+from app.repositories.notice_repository import NoticeRepository
 from app.schemas.category_schema import CategoryCreate, CategoryRead
 from app.models.category import Category
+from app.models.user import User
 class CategoryService:
     def __init__(self, db: AsyncSession):
         self.db = db
         self.category_repo = CategoryRepository(db)
+        self.notice_repo = NoticeRepository(db)
 
     async def create(self, data: CategoryCreate) -> Category:
         return await self.category_repo.create(Category(**data.model_dump()))
 
     async def list_all(self) -> list[Category]:
         return await self.category_repo.list_all()
+
+    async def reassign_notices(self,from_id:int, to_id:int)-> dict:
+        from_category = await self.category_repo.get_by_id(from_id)
+        if not from_category:
+            raise HTTPException(404, "Source category not found")
+
+        to_category = await self.category_repo.get_by_id(to_id)
+        if not to_category:
+            raise HTTPException(404, "Target category not found")
+
+        if from_id == to_id:
+            raise HTTPException(400, "Source and target category cant be same")
+
+        notices = await self.notice_repo.list_by_category_id(from_id)
+        for notice in notices:
+            notice.category_id = to_id
+            await self.notice_repo.update(notice)
+
+        return{"notices moved": {len(notices)}}
+
+    async def delete(self,current_user:User, category_id:int)->None:
+        if current_user.role.role != "admin":
+            raise HTTPException(
+                403,"You do not have permision to delete this category!"
+            )
+        category = await self.category_repo.get_by_id(category_id)
+        if not category:
+            raise HTTPException(
+                404,"Category not found!"
+            )
+
+        notices = await self.notice_repo.list_by_category_id(category_id)
+        if notices:
+            raise HTTPException(
+                400,"Cant delete a category with existing notices. Reassign notices then delete."
+            )
+        await self.category_repo.delete(category)
+
+        

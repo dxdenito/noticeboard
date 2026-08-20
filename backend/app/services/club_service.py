@@ -42,3 +42,32 @@ class ClubService:
         for field, value in data.model_dump(exclude_unset=True).items():
             setattr(club, field, value)
         return await self.club_repo.update(club)
+
+    async def remove_all_members(self,current_user:User,  club_id: int) -> None: 
+        club = await self.club_repo.get_by_id(club_id)
+        if not club:
+            raise HTTPException(404,"Club not found")
+        if current_user.role.role != "admin":
+            raise HTTPException(
+                403, "You don't have permission to update this club"
+            )
+        members = await self.membership_repo.list_by_club_id(club_id)
+        for member in members:
+            await self.membership_repo.delete(member)
+
+    async def delete(self,current_user:User, club_id:int)-> None:
+        club = await self.club_repo.get_by_id(club_id)
+        if not club:
+            raise HTTPException(404,"Club not found")
+       
+        if current_user.role.role != "admin":
+            raise HTTPException(
+                403,"You have no permission to delete this club"
+            )
+        members = await self.membership_repo.list_by_club_id(club_id)
+        if members:
+            raise HTTPException(
+                400,
+                f"Cannot delete club: {len(members)} still attached. Remove them first"
+            )
+        return await self.club_repo.delete(club)

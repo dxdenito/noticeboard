@@ -2,9 +2,10 @@
 @plugin "tailwindcss-animate";
 
 @theme {
-    --color-jkuat-green: #95cb48;
+    --color-jkuat-green: #11DC15;
     --color-jkuat-red: #dc1511;
-    --color-jkuat-bg: #f4f7f5
+    --color-jkuat-bg: #f4f7f5;
+    --color-jkuat-blue: #1511DC;
 }
 
 body {

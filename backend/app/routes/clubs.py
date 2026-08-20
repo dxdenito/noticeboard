@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.club_schema import (
     ClubCreate,
     ClubRead,
@@ -76,3 +77,23 @@ async def set_club_leader(
     return await membership_service.set_leader(
         club_id, user_id, data.is_leader, current_user
     )
+
+@router.patch("/{id}/remove-all-members")
+async def remove_all_club_members(
+    id: int,
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    club_service = ClubService(db)
+    await club_service.remove_all_members(current_user, id)
+    return {"message": "All members removed"}
+
+
+@router.delete("/{id}", status_code=204)
+async def delete_club(
+    id: int,
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    club_service = ClubService(db)
+    await club_service.delete(current_user, id)
