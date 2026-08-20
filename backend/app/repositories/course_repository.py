@@ -37,3 +37,7 @@ class CourseRepository:
         statement = select(Course).where(Course.department_id == department_id)
         result = await self.db.execute(statement)
         return list(result.scalars().all())
+
+    async def delete(self, course: Course) -> None:
+        await self.db.delete(course)
+        await self.db.commit()

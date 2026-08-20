@@ -23,6 +23,16 @@ export default function ManageCategories(){
         useEffect(() => {
             loadCategories();
         }, []);
+        async function handleDelete(id) {
+            if (!confirm("Delete this category? This cannot be undone.")) return;
+            try {
+                await api.delete(`/categories/${id}`);
+                showSuccess("Category deleted");
+                loadCategories();
+            } catch (err) {
+                showError(err.message);
+            }
+        }
 
         async function handleSubmit(e) {
             e.preventDefault();
@@ -38,7 +48,21 @@ export default function ManageCategories(){
             setSubmitting(false);
             }
         }
-
+        async function handleReassignAndDelete(id, name) {
+            const targetId = prompt(
+                `To delete "${name}", first pick a category to move its notices to.\nEnter the target category's ID:`
+            );
+            if (!targetId) return;
+            try {
+                await api.patch(`/categories/${id}/reassign-notices?to_category_id=${targetId}`);
+                await api.delete(`/categories/${id}`);
+                showSuccess("Category deleted, notices reassigned");
+                loadCategories();
+            } catch (err) {
+                showError(err.message);
+            }
+            }
+        
         if (loading) return <div className="p-8 text-center">Loading...</div>;
     return(
 
@@ -66,17 +90,22 @@ export default function ManageCategories(){
                     <table className="w-full text-sm">
                     <thead className="border-b bg-gray-50">
                         <tr>
-                        <th className="text-left p-3">Name</th>
-                        
+                            <th className="text-left p-3">Name</th>
+                            <th className="text-left p-3">Actions</th>
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         {categories.map((c) => (
-                        <tr key={c.id} className="border-b last:border-0">
+                            <tr key={c.id} className="border-b last:border-0">
                             <td className="p-3">{c.name}</td>
-                        </tr>
+                            <td className="p-3">
+                                <button onClick={() => handleReassignAndDelete(c.id, c.name)} className="text-red-600 text-xs">
+                                Delete
+                                </button>
+                            </td>
+                            </tr>
                         ))}
-                    </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>

@@ -34,6 +34,17 @@ export default function ManageCourses(){
             loadDepartments();
         }, []);
 
+        async function handleDelete(id) {
+            if (!confirm("Delete this course? This cannot be undone.")) return;
+            try {
+                await api.delete(`/courses/${id}`);
+                showSuccess("Course deleted");
+                loadCourses();
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
         async function handleSubmit(e) {
             e.preventDefault();
             setSubmitting(true);
@@ -53,6 +64,16 @@ export default function ManageCourses(){
             setSubmitting(false);
             }
         }
+        async function handleClearMembers(id) {
+            if (!confirm("Remove all members from this course?")) return;
+            try {
+                await api.patch(`/courses/${id}/remove-all-enrollments`);
+                showSuccess("Members removed");
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
 
         if (loading) return <div className="p-8 text-center">Loading...</div>;
     return(
@@ -98,22 +119,29 @@ export default function ManageCourses(){
                 <div className="bg-white rounded ">
                     <table className="w-full text-sm">
                     <thead className="border-b bg-gray-50">
-                        <tr>
+                    <tr>
                         <th className="text-left p-3">Name</th>
                         <th className="text-left p-3">code</th>
                         <th className="text-left p-3">department</th>
-
-                        </tr>
+                        <th className="text-left p-3">Actions</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {courses.map((c) => (
+                    {courses.map((c) => (
                         <tr key={c.id} className="border-b last:border-0">
-                            <td className="p-3">{c.name}</td>
-                            <td className="p-3">{c.code}</td>
-                            <td className="p-3">{c.department?.name ?? c.department_id}</td>
-
+                        <td className="p-3">{c.name}</td>
+                        <td className="p-3">{c.code}</td>
+                        <td className="p-3">{c.department?.name ?? c.department_id}</td>
+                        <td className="p-3 flex gap-2">
+                            <button onClick={() => handleClearMembers(c.id)} className="text-xs text-gray-600 underline">
+                            Clear Enrollments
+                            </button>
+                            <button onClick={() => handleDelete(c.id)} className="text-red-600 text-xs">
+                            Delete
+                            </button>
+                        </td>
                         </tr>
-                        ))}
+                    ))}
                     </tbody>
                     </table>
                 </div>

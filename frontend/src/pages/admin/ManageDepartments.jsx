@@ -19,6 +19,16 @@ export default function ManageDepartments() {
       setLoading(false);
     }
   }
+  async function handleDelete(id) {
+    if (!confirm("Delete this Department? This cannot be undone.")) return;
+    try {
+      await api.delete(`/departments/${id}`);
+      showSuccess("department deleted");
+      loadDepartments();
+    } catch (err) {
+      showError(err.message);
+    }
+  }
 
   useEffect(() => {
     loadDepartments();
@@ -77,6 +87,7 @@ export default function ManageDepartments() {
             <tr>
               <th className="text-left p-3">Name</th>
               <th className="text-left p-3">Code</th>
+              <th className="text-left p-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -84,6 +95,11 @@ export default function ManageDepartments() {
               <tr key={d.id} className="border-b last:border-0">
                 <td className="p-3">{d.name}</td>
                 <td className="p-3">{d.code}</td>
+                <td className="p-3">
+                  <button onClick={() => handleDelete(d.id)} className="text-red-600 text-xs">
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

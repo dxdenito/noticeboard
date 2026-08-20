@@ -36,3 +36,14 @@ class CourseEnrollmentRepository:
         )
         result = await self.db.execute(statement)
         return result.scalars().first()
+
+    async def list_by_course_id(self, course_id: int) -> list[CourseEnrollment]:
+        statement = select(CourseEnrollment).where(
+            CourseEnrollment.course_id == course_id
+        )
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
+
+    async def delete(self, enrollment: CourseEnrollment) -> None:
+        await self.db.delete(enrollment)
+        await self.db.commit()

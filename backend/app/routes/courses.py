@@ -84,3 +84,24 @@ async def set_course_leader(
     return await enrollment_service.set_leader(
         course_id, user_id, data.is_leader, current_user
     )
+
+
+@router.patch("/{id}/remove-all-enrollments")
+async def remove_all_course_enrollments(
+    id: int,
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    course_service = CourseService(db)
+    await course_service.remove_all_enrollments(current_user, id)
+    return {"message": "All enrollments removed"}
+
+
+@router.delete("/{id}", status_code=204)
+async def delete_course(
+    id: int,
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    course_service = CourseService(db)
+    await course_service.delete(current_user, id)

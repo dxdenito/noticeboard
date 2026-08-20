@@ -24,6 +24,17 @@ export default function ManageClubs(){
             loadClubs();
         }, []);
 
+        async function handleDelete(id) {
+            if (!confirm("Delete this club? This cannot be undone.")) return;
+            try {
+                await api.delete(`/clubs/${id}`);
+                showSuccess("club deleted");
+                loadClubs();
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
         async function handleSubmit(e) {
             e.preventDefault();
             setSubmitting(true);
@@ -38,6 +49,16 @@ export default function ManageClubs(){
             setSubmitting(false);
             }
         }
+        async function handleClearMembers(id) {
+            if (!confirm("Remove all members from this club?")) return;
+            try {
+                await api.patch(`/clubs/${id}/remove-all-members`);
+                showSuccess("Members removed");
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
 
         if (loading) return <div className="p-8 text-center">Loading...</div>;
     return(
@@ -72,18 +93,27 @@ export default function ManageClubs(){
                 <div className="bg-white rounded shadow-sm border">
                     <table className="w-full text-sm">
                     <thead className="border-b bg-gray-50">
-                        <tr>
+                    <tr>
                         <th className="text-left p-3">Name</th>
                         <th className="text-left p-3">Description</th>
-                        </tr>
+                        <th className="text-left p-3">Actions</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {clubs.map((c) => (
+                    {clubs.map((c) => (
                         <tr key={c.id} className="border-b last:border-0">
-                            <td className="p-3">{c.name}</td>
-                            <td className="p-3">{c.description}</td>
+                        <td className="p-3">{c.name}</td>
+                        <td className="p-3">{c.description}</td>
+                        <td className="p-3 flex gap-2">
+                            <button onClick={() => handleClearMembers(c.id)} className="text-xs text-gray-600 underline">
+                            Clear Members
+                            </button>
+                            <button onClick={() => handleDelete(c.id)} className="text-red-600 text-xs">
+                            Delete
+                            </button>
+                        </td>
                         </tr>
-                        ))}
+                    ))}
                     </tbody>
                     </table>
                 </div>
